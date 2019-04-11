@@ -18,13 +18,16 @@ const Feedback = ({ handlers }) => {
     )
 }
 
-const Statistics = ({ good, neutral, bad }) => {
+const Statistics = ({ good, neutral, bad, total, mean, positive }) => {
     return (
         <>
             <h1>Statistiikka</h1>
             <p>Hyvä: {good}</p>
             <p>Neutraali: {neutral}</p>
             <p>Huono: {bad}</p>
+            <p>Yhteensä {total}</p>
+            <p>Keskiarvo {mean}</p>
+            <p>Positiivisia {positive} %</p>
         </>
     )
 }
@@ -33,6 +36,24 @@ const App = () => {
     const [good, setGood] = useState(0)
     const [neutral, setNeutral] = useState(0)
     const [bad, setBad] = useState(0)
+
+    const total = () => good + neutral + bad
+
+    const mean = () => {
+        if (total() === 0) {
+            return 0
+        } else {
+            return (good - bad) / total()
+        }
+    }
+
+    const positive = () => {
+        if (total() === 0) {
+            return 0
+        } else {
+            return good / total() * 100
+        }
+    }
     
     const handlers = {
         good: () => setGood(good + 1),
@@ -43,7 +64,7 @@ const App = () => {
     return (
         <div>
             <Feedback handlers={handlers} good={good} neutral={neutral} bad={bad} />
-            <Statistics good={good} neutral={neutral} bad={bad} />
+            <Statistics good={good} neutral={neutral} bad={bad} total={total()} mean={mean()} positive={positive()} />
         </div>
     )
 }
