@@ -19,6 +19,15 @@ const Feedback = ({ handlers }) => {
 }
 
 const Statistics = ({ good, neutral, bad, total, mean, positive }) => {
+    if (total === 0) {
+        return (
+            <>
+                <h1>Statistiikka</h1>
+                <p>Ei yhtään palautetta annettu.</p>
+            </>
+        )
+    }
+
     return (
         <>
             <h1>Statistiikka</h1>
@@ -54,7 +63,7 @@ const App = () => {
             return good / total() * 100
         }
     }
-    
+
     const handlers = {
         good: () => setGood(good + 1),
         neutral: () => setNeutral(neutral + 1),
