@@ -19,9 +19,10 @@ const Feedback = ({ handlers }) => {
 }
 
 const Statistic = ({ text, value }) => (
-    <p>
-        {text}: {value}
-    </p>
+    <tr>
+        <td>{text}</td>
+        <td>{value}</td>
+    </tr>
 )
 
 const Statistics = ({ good, neutral, bad, total, mean, positive }) => {
@@ -37,12 +38,16 @@ const Statistics = ({ good, neutral, bad, total, mean, positive }) => {
     return (
         <>
             <h1>Statistiikka</h1>
-            <Statistic text="Hyvä" value={good} />
-            <Statistic text="Neutraali" value={neutral} />
-            <Statistic text="Huono" value={bad} />
-            <Statistic text="Yhteensä" value={total} />
-            <Statistic text="Keskiarvo" value={mean} />
-            <Statistic text="Positiivisia" value={positive + " %"} />
+            <table>
+                <tbody>
+                    <Statistic text="Hyvä" value={good} />
+                    <Statistic text="Neutraali" value={neutral} />
+                    <Statistic text="Huono" value={bad} />
+                    <Statistic text="Yhteensä" value={total} />
+                    <Statistic text="Keskiarvo" value={mean} />
+                    <Statistic text="Positiivisia" value={positive + " %"} />
+                </tbody>
+            </table>
         </>
     )
 }
