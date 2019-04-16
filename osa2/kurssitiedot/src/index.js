@@ -20,11 +20,10 @@ const Content = ({ parts }) => {
 }
 
 const Total = ({ parts }) => {
-    let total = 0
+    const accumulate = (sum, part) => sum + part
 
-    parts.forEach(part => {
-        total += part.exercises
-    })
+    const exercises = parts.map(part => part.exercises)
+    const total = exercises.reduce(accumulate)
 
     return (
         <p>yhteensä {total} tehtävää</p>
