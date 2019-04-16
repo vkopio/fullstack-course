@@ -15,6 +15,14 @@ const App = () => {
     const addPerson = (event) => {
         event.preventDefault()
 
+        console.log(persons.filter(person => person.name === newName).length)
+
+        if (persons.some(person => person.name === newName)) {
+            alert(`${newName} on jo luettelossa.`)
+            setNewName('')
+            return
+        }
+
         const personObject = {
             name: newName
         }
