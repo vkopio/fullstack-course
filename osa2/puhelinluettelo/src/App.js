@@ -2,15 +2,24 @@ import React, { useState } from 'react'
 
 const Persons = ({ persons }) => {
     return persons.map(person =>
-        <div key={person.name}>{person.name}</div>
+        <div key={person.name}>{person.name} {person.number}</div>
     )
 }
 
 const App = () => {
     const [persons, setPersons] = useState([
-        { name: 'Arto Hellas' }
+        {
+            name: 'Arto Hellas',
+            number: '045-123456'
+        }
     ])
     const [newName, setNewName] = useState('')
+    const [newNumber, setNewNumber] = useState('')
+
+    const resetPerson = () => {
+        setNewName('')
+        setNewNumber('')
+    }
 
     const addPerson = (event) => {
         event.preventDefault()
@@ -19,20 +28,25 @@ const App = () => {
 
         if (persons.some(person => person.name === newName)) {
             alert(`${newName} on jo luettelossa.`)
-            setNewName('')
+            resetPerson()
             return
         }
 
         const personObject = {
-            name: newName
+            name: newName,
+            number: newNumber
         }
 
         setPersons(persons.concat(personObject))
-        setNewName('')
+        resetPerson()
     }
 
     const handleNameChange = (event) => {
         setNewName(event.target.value)
+    }
+
+    const handleNumberChange = (event) => {
+        setNewNumber(event.target.value)
     }
 
     return (
@@ -42,6 +56,11 @@ const App = () => {
                 <div>
                     nimi: <input value={newName} onChange={handleNameChange} />
                 </div>
+
+                <div>
+                    numero: <input value={newNumber} onChange={handleNumberChange} />
+                </div>
+
                 <div>
                     <button type="submit">lisää</button>
                 </div>
