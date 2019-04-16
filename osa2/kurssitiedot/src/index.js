@@ -19,11 +19,24 @@ const Content = ({ parts }) => {
     return content()
 }
 
+const Total = ({ parts }) => {
+    let total = 0
+
+    parts.forEach(part => {
+        total += part.exercises
+    })
+
+    return (
+        <p>yhteensä {total} tehtävää</p>
+    )
+}
+
 const Course = ({ course }) => {
     return (
         <>
             <Header course={course.name} />
             <Content parts={course.parts} />
+            <Total parts={course.parts} />
         </>
     )
 }
