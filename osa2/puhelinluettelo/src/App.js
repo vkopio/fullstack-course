@@ -8,13 +8,18 @@ const Persons = ({ persons }) => {
 
 const App = () => {
     const [persons, setPersons] = useState([
-        {
-            name: 'Arto Hellas',
-            number: '045-123456'
-        }
+        { name: 'Arto Hellas', number: '040-123456' },
+        { name: 'Martti Tienari', number: '040-123456' },
+        { name: 'Arto Järvinen', number: '040-123456' },
+        { name: 'Lea Kutvonen', number: '040-123456' }
     ])
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
+    const [nameFilter, setNameFilter] = useState('')
+
+    const peopleToShow = persons.filter(person =>
+        person.name.toLowerCase().includes(nameFilter.toLowerCase())
+    )
 
     const resetPerson = () => {
         setNewName('')
@@ -23,8 +28,6 @@ const App = () => {
 
     const addPerson = (event) => {
         event.preventDefault()
-
-        console.log(persons.filter(person => person.name === newName).length)
 
         if (persons.some(person => person.name === newName)) {
             alert(`${newName} on jo luettelossa.`)
@@ -49,9 +52,20 @@ const App = () => {
         setNewNumber(event.target.value)
     }
 
+    const handleNameFilterChange = (event) => {
+        setNameFilter(event.target.value)
+    }
+
     return (
         <div>
-            <h2>Puhelinluettelo</h2>
+            <h1>Puhelinluettelo</h1>
+
+            <div>
+                Rajaa näytettäviä: <input value={nameFilter} onChange={handleNameFilterChange} />
+            </div>
+
+            <h2>Lisää uusi</h2>
+
             <form onSubmit={addPerson}>
                 <div>
                     nimi: <input value={newName} onChange={handleNameChange} />
@@ -67,8 +81,8 @@ const App = () => {
             </form>
 
             <h2>Numerot</h2>
-            <Persons persons={persons} />
-    </div>
+            <Persons persons={peopleToShow} />
+        </div>
     )
 
 }
