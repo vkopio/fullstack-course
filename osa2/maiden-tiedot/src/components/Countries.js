@@ -1,8 +1,11 @@
 import React from 'react'
 
-const Country = ({ name }) => {
+const Country = ({ name, setCountryHandler }) => {
     return (
-        <div>{name}</div>
+        <div>
+            {name}
+            <button onClick={setCountryHandler(name)}>Show</button>
+        </div>
     )
 }
 
@@ -28,7 +31,7 @@ const CountryDetails = ({ country }) => {
     )
 }
 
-const Countries = ({ countries }) => {
+const Countries = ({ countries, setCountryHandler }) => {
     if (countries.length === 1) {
         return (
             <CountryDetails country={countries[0]} />
@@ -39,7 +42,7 @@ const Countries = ({ countries }) => {
         )
     } else {
         return countries.map(country =>
-            <Country key={country.alpha3Code} name={country.name} />
+            <Country key={country.alpha3Code} name={country.name} setCountryHandler={setCountryHandler} />
         )
     }
 }

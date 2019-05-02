@@ -15,6 +15,12 @@ const App = () => {
         setCountryFilter(event.target.value)
     }
 
+    const setCountryHandler = (countryName) => {
+        return () => {
+            setCountryFilter(countryName)
+        }
+    }
+
     useEffect(() => {
         axios
             .get('https://restcountries.eu/rest/v2/all')
@@ -26,7 +32,7 @@ const App = () => {
     return (
         <div className="App">
             <Filter value={countryFilter} changeHandler={handleCountryFilterChange} />
-            <Countries countries={countriesToShow} />
+            <Countries countries={countriesToShow} setCountryHandler={setCountryHandler} />
         </div>
     );
 }
