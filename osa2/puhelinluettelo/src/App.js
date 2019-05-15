@@ -3,12 +3,14 @@ import Filter from './components/Filter'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
 import peopleService from './services/people'
+import Notification from './components/Notification'
 
 const App = () => {
     const [persons, setPersons] = useState([])
     const [newName, setNewName] = useState('')
     const [newNumber, setNewNumber] = useState('')
     const [nameFilter, setNameFilter] = useState('')
+    const [notification, setNotification] = useState({})
 
     useEffect(() => {
         peopleService
@@ -17,6 +19,14 @@ const App = () => {
                 setPersons(initialPeople)
             })
     }, [])
+
+    const newNotification = (notification) => {
+        setNotification(notification)
+
+        setTimeout(() => {
+            setNotification({})
+        }, 5000)
+    }
 
     const peopleToShow = persons.filter(person =>
         person.name.toLowerCase().includes(nameFilter.toLowerCase())
@@ -47,6 +57,11 @@ const App = () => {
                         setPersons(persons.map(person =>
                             person.id !== existingPerson.id ? person : returnedPerson
                         ))
+
+                        newNotification({
+                            message: `Päivitettiin ${returnedPerson.name}`,
+                            type: 'success'
+                        })
                     })
             }
 
@@ -58,19 +73,30 @@ const App = () => {
             .create(personObject)
             .then(newPerson => {
                 setPersons(persons.concat(newPerson))
+                newNotification({
+                    message: `Lisättiin ${newPerson.name}`,
+                    type: 'success'
+                })
                 resetPerson()
             })
     }
 
-    const removePerson = (id) => {
+    const removePerson = (personToRemove) => {
         peopleService
-            .remove(id)
-            .then(returnedNote => {
-                setPersons(persons.filter(person => person.id !== id))
+            .remove(personToRemove.id)
+            .then(() => {
+                setPersons(persons.filter(person => person.id !== personToRemove.id))
+                newNotification({
+                    message: `Poistettiin ${personToRemove.name}`,
+                    type: 'success'
+                })
             })
             .catch(error => {
-                alert('Henkilö on jo valitettavasti poistettu palvelimelta')
-                setPersons(persons.filter(person => person.id !== id))
+                setPersons(persons.filter(person => person.id !== personToRemove.id))
+                newNotification({
+                    message: `Henkilö ${personToRemove.name} oli jo poistettu.`,
+                    type: 'error'
+                })
             })
     }
 
@@ -88,13 +114,15 @@ const App = () => {
 
     const handlePersonRemoval = (person) => {
         if (window.confirm(`Poistetaanko ${person.name}?`)) {
-            removePerson(person.id)
+            removePerson(person)
         }
     }
 
     return (
         <div>
             <h1>Puhelinluettelo</h1>
+
+            <Notification notification={notification} />
 
             <Filter value={nameFilter} changeHandler={handleNameFilterChange} />
 
