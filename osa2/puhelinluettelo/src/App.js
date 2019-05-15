@@ -41,8 +41,13 @@ const App = () => {
             number: newNumber
         }
 
-        setPersons(persons.concat(personObject))
-        resetPerson()
+        const request = axios.post('http://localhost:3001/persons', personObject)
+
+        request
+            .then(response => {
+                setPersons(persons.concat(response.data))
+                resetPerson()
+            })
     }
 
     const handleNameChange = (event) => {
@@ -71,7 +76,7 @@ const App = () => {
                 newNumber={newNumber}
                 handleNameChange={handleNameChange}
                 handleNumberChange={handleNumberChange}
-             />
+            />
 
             <h2>Numerot</h2>
             <Persons persons={peopleToShow} />
