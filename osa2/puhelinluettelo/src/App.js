@@ -30,15 +30,28 @@ const App = () => {
     const addPerson = (event) => {
         event.preventDefault()
 
-        if (persons.some(person => person.name === newName)) {
-            alert(`${newName} on jo luettelossa.`)
-            resetPerson()
-            return
-        }
-
         const personObject = {
             name: newName,
             number: newNumber
+        }
+
+        const existingPerson = persons.find(person => person.name === newName)
+
+        if (existingPerson) {
+            const confirmMessage = `${newName} on jo luettelossa. Korvataanko vanha numero uudella?`
+
+            if (window.confirm(confirmMessage)) {
+                peopleService
+                    .update(existingPerson.id, personObject)
+                    .then(returnedPerson => {
+                        setPersons(persons.map(person =>
+                            person.id !== existingPerson.id ? person : returnedPerson
+                        ))
+                    })
+            }
+
+            resetPerson()
+            return
         }
 
         peopleService
