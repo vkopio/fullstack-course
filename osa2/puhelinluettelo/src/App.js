@@ -49,6 +49,18 @@ const App = () => {
             })
     }
 
+    const removePerson = (id) => {
+        peopleService
+            .remove(id)
+            .then(returnedNote => {
+                setPersons(persons.filter(person => person.id !== id))
+            })
+            .catch(error => {
+                alert('Henkilö on jo valitettavasti poistettu palvelimelta')
+                setPersons(persons.filter(person => person.id !== id))
+            })
+    }
+
     const handleNameChange = (event) => {
         setNewName(event.target.value)
     }
@@ -59,6 +71,12 @@ const App = () => {
 
     const handleNameFilterChange = (event) => {
         setNameFilter(event.target.value)
+    }
+
+    const handlePersonRemoval = (person) => {
+        if (window.confirm(`Poistetaanko ${person.name}?`)) {
+            removePerson(person.id)
+        }
     }
 
     return (
@@ -78,7 +96,7 @@ const App = () => {
             />
 
             <h2>Numerot</h2>
-            <Persons persons={peopleToShow} />
+            <Persons persons={peopleToShow} removalHandler={handlePersonRemoval} />
         </div>
     )
 
