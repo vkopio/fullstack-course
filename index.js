@@ -3,6 +3,7 @@ const bodyParser = require('body-parser')
 const morgan = require('morgan')
 
 const app = express()
+const PORT = process.env.PORT || 3001
 
 morgan.token('request-body', (req, res) => {
     if (req.method === 'POST' && req.body) {
@@ -108,7 +109,6 @@ app.get('/info', (req, res) => {
     res.send(`${info}${time}`)
 })
 
-const PORT = 3001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
