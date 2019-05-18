@@ -4,6 +4,28 @@ const app = express()
 
 app.use(bodyParser.json())
 
+const generateId = () => {
+    return Math.floor(Math.random() * 10000000)
+}
+
+const validatePerson = (body) => {
+    let errors = []
+
+    if (!body.name) {
+        errors = [...errors, 'name missing']
+    }
+
+    if (!body.number) {
+        errors = [...errors, 'number missing']
+    }
+
+    if (persons.some(person => person.name === body.name)) {
+        errors = [...errors, 'name must be unique']
+    }
+
+    return errors
+}
+
 let persons = [
     {
         "name": "Arto Hellas",
@@ -40,6 +62,27 @@ app.get('/api/persons/:id', (request, response) => {
     } else {
         response.status(404).end()
     }
+})
+
+app.post('/api/persons', (request, response) => {
+    const body = request.body
+    const errors = validatePerson(body)
+
+    if (errors.length > 0) {
+        return response.status(400).json({
+            errors: errors
+        })
+    }
+
+    const person = {
+        name: body.name,
+        number: body.number,
+        id: generateId(),
+    }
+
+    persons = persons.concat(person)
+
+    response.json(person)
 })
 
 app.delete('/api/persons/:id', (request, response) => {
