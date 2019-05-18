@@ -13,6 +13,7 @@ morgan.token('request-body', (req, res) => {
 
 app.use(bodyParser.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :request-body'))
+app.use(express.static('build'))
 
 const generateId = () => {
     return Math.floor(Math.random() * 10000000)
