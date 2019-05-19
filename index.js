@@ -8,7 +8,7 @@ const app = express()
 const PORT = process.env.PORT || 3001
 
 morgan.token('request-body', (req, res) => {
-    if (req.method === 'POST' && req.body) {
+    if ((req.method === 'POST' || req.method === 'PUT' || req.method === 'PATCH') && req.body) {
         return JSON.stringify(req.body)
     }
 })
@@ -64,7 +64,7 @@ app.get('/api/persons', (request, response) => {
     })
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
     Person.findById(request.params.id)
         .then(person => {
             if (person) {
@@ -76,7 +76,7 @@ app.get('/api/persons/:id', (request, response) => {
         .catch(error => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
     const body = request.body
     const errors = validatePerson(body)
 
@@ -91,9 +91,11 @@ app.post('/api/persons', (request, response) => {
         number: body.number,
     })
 
-    person.save().then(res => {
-        response.json(person)
-    })
+    person.save()
+        .then(res => {
+            response.json(person)
+        })
+        .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
@@ -104,14 +106,15 @@ app.put('/api/persons/:id', (request, response, next) => {
         number: body.number,
     }
 
-    Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    Person.findOneAndUpdate({ _id: request.params.id }, person, { new: true, runValidators: true })
         .then(updatedPerson => {
+            console.log(person)
             response.json(updatedPerson.toJSON())
         })
         .catch(error => next(error))
 })
 
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
     Person.findByIdAndRemove(request.params.id)
         .then(result => {
             response.status(204).end()
@@ -139,6 +142,10 @@ const errorHandler = (error, request, response, next) => {
 
     if (error.name === 'CastError' && error.kind == 'ObjectId') {
         return response.status(400).send({ error: 'malformatted id' })
+    }
+
+    if (error.name === 'ValidationError') {
+        return response.status(400).json({ error: error.message })
     }
 
     next(error)
