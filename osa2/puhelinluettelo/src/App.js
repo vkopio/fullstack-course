@@ -63,6 +63,12 @@ const App = () => {
                             type: 'success'
                         })
                     })
+                    .catch(error => {
+                        newNotification({
+                            message: error.response.data.error,
+                            type: 'error'
+                        })
+                    })
             }
 
             resetPerson()
@@ -78,6 +84,12 @@ const App = () => {
                     type: 'success'
                 })
                 resetPerson()
+            })
+            .catch(error => {
+                newNotification({
+                    message: error.response.data.error,
+                    type: 'error'
+                })
             })
     }
 
