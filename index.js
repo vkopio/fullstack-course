@@ -17,10 +17,6 @@ app.use(bodyParser.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :request-body'))
 app.use(express.static('build'))
 
-const generateId = () => {
-    return Math.floor(Math.random() * 10000000)
-}
-
 const validatePerson = (body) => {
     let errors = []
 
@@ -89,15 +85,14 @@ app.post('/api/persons', (request, response) => {
         })
     }
 
-    const person = {
+    const person = new Person({
         name: body.name,
         number: body.number,
-        id: generateId(),
-    }
+    })
 
-    persons = persons.concat(person)
-
-    response.json(person)
+    person.save().then(res => {
+        response.json(person)
+    })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
