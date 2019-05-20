@@ -20,6 +20,7 @@ const blog2 = {
 
 const listWithOneBlog = [blog1]
 const listWithMultipleBlogs = [blog1, blog2]
+const duplicateBlogs = [...listWithMultipleBlogs, blog2]
 
 const simplifyBlog = (blog) => {
     return {
@@ -71,6 +72,34 @@ describe('favorite blog', () => {
 
     test('should return an empty object if the list is empty', () => {
         const result = listHelper.favoriteBlog([])
+
+        expect(result).toEqual({})
+    })
+})
+
+describe('most blogs', () => {
+    test('should return an author with most blogs', () => {
+        const result = listHelper.mostBlogs(duplicateBlogs)
+        const expected = {
+            author: 'Nobody',
+            blogs: 2
+        }
+
+        expect(result).toEqual(expected)
+    })
+
+    test('should behave correctly if only one blog', () => {
+        const result = listHelper.mostBlogs(listWithOneBlog)
+        const expected = {
+            author: 'Edsger W. Dijkstra',
+            blogs: 1
+        }
+
+        expect(result).toEqual(expected)
+    })
+
+    test('should return an empty object if the list is empty', () => {
+        const result = listHelper.mostBlogs([])
 
         expect(result).toEqual({})
     })
