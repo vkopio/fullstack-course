@@ -21,6 +21,14 @@ const blog2 = {
 const listWithOneBlog = [blog1]
 const listWithMultipleBlogs = [blog1, blog2]
 
+const simplifyBlog = (blog) => {
+    return {
+        title: blog.title,
+        author: blog.author,
+        likes: blog.likes
+    }
+}
+
 
 test('dummy returns one', () => {
     const blogs = []
@@ -47,5 +55,23 @@ describe('total likes', () => {
 })
 
 describe('favorite blog', () => {
+    test('should return the blog with most likes', () => {
+        const result = listHelper.favoriteBlog(listWithMultipleBlogs)
+        const expected = simplifyBlog(blog1)
 
+        expect(result).toEqual(expected)
+    })
+
+    test('should return the correct blog if only one in the list', () => {
+        const result = listHelper.favoriteBlog(listWithOneBlog)
+        const expected = simplifyBlog(blog1)
+
+        expect(result).toEqual(expected)
+    })
+
+    test('should return an empty object if the list is empty', () => {
+        const result = listHelper.favoriteBlog([])
+
+        expect(result).toEqual({})
+    })
 })
