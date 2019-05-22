@@ -90,6 +90,24 @@ test('a blog can be deleted', async () => {
     expect(blogs.length).toBe(helper.initialBlogs.length - 1)
 })
 
+test('a blog can be updated', async () => {
+    const blog = await Blog.findOne({ title: helper.initialBlogs[0].title })
+
+    const updatedAttributes = {
+        url: 'https://test.test'
+    }
+
+    await api
+        .patch(`/api/blogs/${blog.id}`)
+        .send(updatedAttributes)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+
+    const updatedBlog = await Blog.findOne({ title: helper.initialBlogs[0].title })
+
+    expect(updatedBlog.url).toBe(updatedAttributes.url)
+})
+
 afterAll(() => {
     mongoose.connection.close()
 })
