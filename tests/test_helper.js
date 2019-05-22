@@ -36,7 +36,7 @@ const blogsInDb = async () => {
 }
 
 const initialUsers = [
-    { username: 'root', password: 'thisisfine' }
+    { username: 'root', passwordHash: 'thisisfine' }
 ]
 
 const usersInDb = async () => {
