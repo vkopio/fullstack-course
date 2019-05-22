@@ -62,6 +62,22 @@ test('new blog has zero likes', async () => {
     expect(addedBlog.likes).toBe(0)
 })
 
+test('a blog without a title and a url is not added', async () => {
+    const badBlog = {
+        author: 'Clueless'
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(badBlog)
+        .expect(400)
+        .expect('Content-Type', /application\/json/)
+
+    const blogs = await helper.blogsInDb()
+
+    expect(blogs.length).toBe(helper.initialBlogs.length)
+})
+
 afterAll(() => {
     mongoose.connection.close()
 })
