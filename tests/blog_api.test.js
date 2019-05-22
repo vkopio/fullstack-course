@@ -33,9 +33,28 @@ test('all blogs are returned', async () => {
 test('blogs have a field named id', async () => {
     const response = await api.get('/api/blogs')
 
-    console.log(response.body[0])
-
     expect(response.body[0].id).toBeDefined()
+})
+
+test('a valid blog can be added ', async () => {
+    const newBlog = {
+        title: 'New Blog',
+        author: 'Jest',
+        url: 'https://example.com/new',
+        likes: 0
+    }
+
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+    const blogs = await helper.blogsInDb()
+    const titles = blogs.map(blog => blog.title)
+
+    expect(blogs.length).toBe(helper.initialBlogs.length + 1)
+    expect(titles).toContain(newBlog.title)
 })
 
 afterAll(() => {
