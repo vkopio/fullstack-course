@@ -36,17 +36,10 @@ test('blogs have a field named id', async () => {
     expect(response.body[0].id).toBeDefined()
 })
 
-test('a valid blog can be added ', async () => {
-    const newBlog = {
-        title: 'New Blog',
-        author: 'Jest',
-        url: 'https://example.com/new',
-        likes: 0
-    }
-
+test('a valid blog can be added', async () => {
     await api
         .post('/api/blogs')
-        .send(newBlog)
+        .send(helper.newBlog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
 
@@ -54,7 +47,19 @@ test('a valid blog can be added ', async () => {
     const titles = blogs.map(blog => blog.title)
 
     expect(blogs.length).toBe(helper.initialBlogs.length + 1)
-    expect(titles).toContain(newBlog.title)
+    expect(titles).toContain(helper.newBlog.title)
+})
+
+test('new blog has zero likes', async () => {
+    await api
+        .post('/api/blogs')
+        .send(helper.newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+    const addedBlog = await Blog.findOne({title: helper.newBlog.title})
+
+    expect(addedBlog.likes).toBe(0)
 })
 
 afterAll(() => {
