@@ -78,6 +78,18 @@ test('a blog without a title and a url is not added', async () => {
     expect(blogs.length).toBe(helper.initialBlogs.length)
 })
 
+test('a blog can be deleted', async () => {
+    const blog = await Blog.findOne({ title: helper.initialBlogs[0].title })
+
+    await api
+        .delete(`/api/blogs/${blog.id}`)
+        .expect(204)
+
+    const blogs = await helper.blogsInDb()
+
+    expect(blogs.length).toBe(helper.initialBlogs.length - 1)
+})
+
 afterAll(() => {
     mongoose.connection.close()
 })
