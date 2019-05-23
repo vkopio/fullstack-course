@@ -56,9 +56,14 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
+
+      newNotification({
+        message: `Welcome, ${user.name}!`,
+        type: 'success'
+      })
     } catch (exception) {
       newNotification({
-        message: 'käyttäjätunnus tai salasana virheellinen',
+        message: 'Wrong username or password',
         type: 'error'
       })
     }
@@ -67,6 +72,12 @@ const App = () => {
   const handleLogout = (event) => {
     event.preventDefault()
     window.localStorage.removeItem('user')
+
+    newNotification({
+      message: `Goodbye, ${user.name}!`,
+      type: 'success'
+    })
+
     setUser(null)
   }
 
@@ -74,9 +85,20 @@ const App = () => {
     event.preventDefault()
 
     blogService
-      .create(newBlog).then(returnedBlog => {
+      .create(newBlog)
+      .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
         setNewBlog(emptyBlog)
+        newNotification({
+          message: `A new blog ${returnedBlog.title} by ${returnedBlog.author} created`,
+          type: 'success'
+        })
+      })
+      .catch(error => {
+        newNotification({
+          message: `${error.response.data.error}`,
+          type: 'error'
+        })
       })
   }
 
