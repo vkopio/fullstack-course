@@ -5,7 +5,7 @@ const Login = ({ username, setUsername, password, setPassword, handleLogin }) =>
         <form onSubmit={handleLogin}>
             <div>
                 käyttäjätunnus
-          <input
+                <input
                     type="text"
                     value={username}
                     name="Username"
@@ -14,7 +14,7 @@ const Login = ({ username, setUsername, password, setPassword, handleLogin }) =>
             </div>
             <div>
                 salasana
-          <input
+                <input
                     type="password"
                     value={password}
                     name="Password"

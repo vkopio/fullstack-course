@@ -8,7 +8,6 @@ const Blogs = ({ blogs, user }) => {
 
     return (
         <div>
-            <h2>Blogs</h2>
             {blogList}
         </div>
     )
