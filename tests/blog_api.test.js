@@ -120,11 +120,24 @@ test('a blog can be deleted', async () => {
 
     await api
         .delete(`/api/blogs/${blog.id}`)
+        .set('Authorization', `bearer ${token}`)
         .expect(204)
 
     const blogs = await helper.blogsInDb()
 
     expect(blogs.length).toBe(helper.initialBlogs.length - 1)
+})
+
+test('a blog cannot be deleted if not the same user', async () => {
+    const blog = await Blog.findOne({ title: helper.initialBlogs[0].title })
+
+    await api
+        .delete(`/api/blogs/${blog.id}`)
+        .expect(401)
+
+    const blogs = await helper.blogsInDb()
+
+    expect(blogs.length).toBe(helper.initialBlogs.length)
 })
 
 test('a blog can be updated', async () => {
