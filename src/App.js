@@ -18,6 +18,15 @@ const App = () => {
     )
   }, [])
 
+  useEffect(() => {
+    const existingUser = window.localStorage.getItem('user')
+
+    if (existingUser) {
+      const user = JSON.parse(existingUser)
+      setUser(user)
+    }
+  }, [])
+
   const newNotification = (notification) => {
     setNotification(notification)
 
@@ -33,6 +42,8 @@ const App = () => {
         username, password,
       })
 
+      window.localStorage.setItem('user', JSON.stringify(user))
+
       setUser(user)
       setUsername('')
       setPassword('')
@@ -42,6 +53,12 @@ const App = () => {
         type: 'error'
       })
     }
+  }
+
+  const handleLogout = async (event) => {
+    event.preventDefault()
+    window.localStorage.removeItem('user')
+    setUser(null)
   }
 
   return (
@@ -56,7 +73,11 @@ const App = () => {
           setPassword={setPassword}
           handleLogin={handleLogin} /> :
 
-        <Blogs blogs={blogs} user={user} />}
+        <>
+          <p>{user.name} logged in</p>
+          <button onClick={handleLogout}>Logout</button>
+          <Blogs blogs={blogs} user={user} />
+        </>}
 
     </div>
   )
