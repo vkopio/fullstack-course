@@ -1,25 +1,46 @@
 const supertest = require('supertest')
 const mongoose = require('mongoose')
 const helper = require('./test_helper')
+const passwordUtil = require('../utils/password')
 const app = require('../app')
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
 const api = supertest(app)
 
-beforeEach(async () => {
-    await Blog.remove({})
+const getToken = async (user) => {
+    const response = await api
+        .post('/api/login')
+        .send(user)
 
+    return response.body.token
+}
+
+let token
+
+beforeEach(async () => {
+    await Blog.deleteMany({})
     await User.deleteMany({})
-    const user = new User(helper.initialUsers[0])
+
+    const hash = await passwordUtil.createHash(helper.initialUsers[0].password)
+
+    const user = new User({
+        username: helper.initialUsers[0].username,
+        passwordHash: hash
+    })
+
     const savedUser = await user.save()
 
-    const blogObjects = helper.initialBlogs
-        .map(blog => new Blog({...blog, user: savedUser._id}))
+    const blogObjects = helper.initialBlogs.map(blog => new Blog({
+        ...blog, user: savedUser._id
+    }))
+    const promiseBlogs = blogObjects.map(blog => blog.save())
+    await Promise.all(promiseBlogs)
 
-    const promiseArray = blogObjects.map(blog => blog.save())
-
-    await Promise.all(promiseArray)
+    token = await getToken({
+        username: helper.initialUsers[0].username,
+        password: helper.initialUsers[0].password
+    })
 })
 
 test('blogs are returned as json', async () => {
@@ -44,10 +65,10 @@ test('blogs have a field named id', async () => {
 test('a valid blog can be added', async () => {
     const blog = helper.newBlog
     const user = await User.findOne({ username: helper.initialUsers[0].username })
-    blog.userId = user._id
 
     await api
         .post('/api/blogs')
+        .set('Authorization', `bearer ${token}`)
         .send(blog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
@@ -64,10 +85,10 @@ test('a valid blog can be added', async () => {
 test('new blog has zero likes', async () => {
     const blog = helper.newBlog
     const user = await User.findOne({ username: helper.initialUsers[0].username })
-    blog.userId = user._id
 
     await api
         .post('/api/blogs')
+        .set('Authorization', `bearer ${token}`)
         .send(blog)
         .expect(201)
         .expect('Content-Type', /application\/json/)
@@ -84,6 +105,7 @@ test('a blog without a title and a url is not added', async () => {
 
     await api
         .post('/api/blogs')
+        .set('Authorization', `bearer ${token}`)
         .send(badBlog)
         .expect(400)
         .expect('Content-Type', /application\/json/)

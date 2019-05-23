@@ -1,5 +1,6 @@
 const supertest = require('supertest')
 const mongoose = require('mongoose')
+const passwordUtil = require('../utils/password')
 const helper = require('./test_helper')
 const app = require('../app')
 const User = require('../models/user')
@@ -9,7 +10,14 @@ const api = supertest(app)
 describe('when there is initially one user at db', () => {
     beforeEach(async () => {
         await User.deleteMany({})
-        const user = new User(helper.initialUsers[0])
+
+        const hash = await passwordUtil.createHash(helper.initialUsers[0].password)
+
+        const user = new User({
+            username: helper.initialUsers[0].username,
+            passwordHash: hash
+        })
+
         await user.save()
     })
 
