@@ -67,7 +67,7 @@ blogsRouter.patch('/:id', async (request, response, next) => {
     const body = request.body
 
     try {
-        const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, { $set: body })
+        const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, { $set: body }, { new: true })
 
         response.status(200).json(updatedBlog)
     } catch (exception) {
