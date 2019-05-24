@@ -22,9 +22,11 @@ const App = () => {
 
   const blogFormRef = React.createRef()
 
+  const sortBlogs = (blogs) => blogs.sort((a, b) => (a.likes > b.likes) ? -1 : 1)
+
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs(blogs)
+      setBlogs(sortBlogs(blogs))
     )
   }, [])
 
@@ -111,11 +113,11 @@ const App = () => {
     blogService
       .like(blog)
       .then(returnedBlog => {
-        setBlogs(blogs.map(blog =>
+        setBlogs(sortBlogs(blogs.map(blog =>
           blog.id === returnedBlog.id ?
             returnedBlog :
             blog)
-        )
+        ))
 
         newNotification({
           message: `Blog ${returnedBlog.title} was liked`,
