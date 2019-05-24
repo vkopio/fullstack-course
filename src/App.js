@@ -132,8 +132,37 @@ const App = () => {
       })
   }
 
+  const removeBlog = (blogToRemove) => {
+    blogService
+      .remove(blogToRemove)
+      .then(response => {
+        setBlogs(blogs.filter(blog =>
+          blog.id !== blogToRemove.id)
+        )
+
+        newNotification({
+          message: `Blog ${blogToRemove.title} was deleted`,
+          type: 'success'
+        })
+      })
+      .catch(error => {
+        newNotification({
+          message: `${error.response.data.error}`,
+          type: 'error'
+        })
+      })
+  }
+
   const handleBlogLike = (blog) => {
     return () => likeBlog(blog)
+  }
+
+  const handleBlogRemoval = (blog) => {
+    return () => {
+      if (window.confirm(`Do you want to remove blog: ${blog.title} by ${blog.author}?`)) {
+        removeBlog(blog)
+      }
+    }
   }
 
   const blogForm = () => (
@@ -192,7 +221,11 @@ const App = () => {
             {blogForm()}
           </Togglable>
 
-          <Blogs blogs={blogs} handleBlogLike={handleBlogLike} />
+          <Blogs
+            blogs={blogs}
+            user={user}
+            handleBlogLike={handleBlogLike}
+            handleBlogRemoval={handleBlogRemoval} />
         </>}
 
     </div>
