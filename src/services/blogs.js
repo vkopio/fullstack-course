@@ -22,4 +22,17 @@ const create = (newBlog) => {
   return request.then(response => response.data)
 }
 
-export default { getAll, create, setToken }
+const like = (blog) => {
+  const config = {
+    headers: { Authorization: token },
+  }
+
+  const likes = {
+    likes: blog.likes + 1
+  }
+
+  const request = axios.patch(`${baseUrl}/${blog.id}`, likes, config)
+  return request.then(response => response.data)
+}
+
+export default { getAll, create, like, setToken }

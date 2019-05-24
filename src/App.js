@@ -107,6 +107,33 @@ const App = () => {
       })
   }
 
+  const likeBlog = (blog) => {
+    blogService
+      .like(blog)
+      .then(returnedBlog => {
+        setBlogs(blogs.map(blog =>
+          blog.id === returnedBlog.id ?
+            returnedBlog :
+            blog)
+        )
+
+        newNotification({
+          message: `Blog ${returnedBlog.title} was liked`,
+          type: 'success'
+        })
+      })
+      .catch(error => {
+        newNotification({
+          message: `${error.response.data.error}`,
+          type: 'error'
+        })
+      })
+  }
+
+  const handleBlogLike = (blog) => {
+    return () => likeBlog(blog)
+  }
+
   const blogForm = () => (
     <form onSubmit={addBlog}>
       title
@@ -163,7 +190,7 @@ const App = () => {
             {blogForm()}
           </Togglable>
 
-          <Blogs blogs={blogs} user={user} />
+          <Blogs blogs={blogs} handleBlogLike={handleBlogLike} />
         </>}
 
     </div>
