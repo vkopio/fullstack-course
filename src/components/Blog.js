@@ -25,10 +25,10 @@ const Blog = ({ blog, user, handleBlogLike, handleBlogRemoval }) => {
 
     return (
         <div style={blogStyle}>
-            <div onClick={() => toggleDetails()}>
+            <div className="title" onClick={() => toggleDetails()}>
                 {blog.title}, {blog.author}
             </div>
-            <div style={showDetails}>
+            <div className="details" style={showDetails}>
                 <p><a href={blog.url}>{blog.url}</a></p>
                 <p>
                     {blog.likes} likes <button onClick={handleBlogLike(blog)}>Like</button>
