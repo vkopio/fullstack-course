@@ -5,6 +5,7 @@ import Notification from './components/Notification'
 import Togglable from './components/Toglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import { useField } from './hooks'
 
 const App = () => {
     const emptyBlog = {
@@ -16,9 +17,10 @@ const App = () => {
     const [blogs, setBlogs] = useState([])
     const [newBlog, setNewBlog] = useState(emptyBlog)
     const [notification, setNotification] = useState({})
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
     const [user, setUser] = useState(null)
+
+    const username = useField('text')
+    const password = useField('password')
 
     const blogFormRef = React.createRef()
 
@@ -52,15 +54,14 @@ const App = () => {
         event.preventDefault()
         try {
             const user = await loginService.login({
-                username, password,
+                username: username.value,
+                password: password.value,
             })
 
             window.localStorage.setItem('user', JSON.stringify(user))
             blogService.setToken(user.token)
 
             setUser(user)
-            setUsername('')
-            setPassword('')
 
             newNotification({
                 message: `Welcome, ${user.name}!`,
@@ -207,9 +208,7 @@ const App = () => {
             {(user === null) ?
                 <Login
                     username={username}
-                    setUsername={setUsername}
                     password={password}
-                    setPassword={setPassword}
                     handleLogin={handleLogin} /> :
 
                 <>

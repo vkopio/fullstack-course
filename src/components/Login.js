@@ -1,25 +1,15 @@
 import React from 'react'
 
-const Login = ({ username, setUsername, password, setPassword, handleLogin }) => {
+const Login = ({ username, password, handleLogin }) => {
     const loginForm = () => (
         <form onSubmit={handleLogin}>
             <div>
                 käyttäjätunnus
-                <input
-                    type="text"
-                    value={username}
-                    name="Username"
-                    onChange={({ target }) => setUsername(target.value)}
-                />
+                <input {...username} />
             </div>
             <div>
                 salasana
-                <input
-                    type="password"
-                    value={password}
-                    name="Password"
-                    onChange={({ target }) => setPassword(target.value)}
-                />
+                <input {...password} />
             </div>
             <button type="submit">kirjaudu</button>
         </form>
