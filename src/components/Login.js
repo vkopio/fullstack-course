@@ -5,11 +5,11 @@ const Login = ({ username, password, handleLogin }) => {
         <form onSubmit={handleLogin}>
             <div>
                 käyttäjätunnus
-                <input {...username} />
+                <input {...username.toForm()} />
             </div>
             <div>
                 salasana
-                <input {...password} />
+                <input {...password.toForm()} />
             </div>
             <button type="submit">kirjaudu</button>
         </form>

@@ -8,19 +8,30 @@ import loginService from './services/login'
 import { useField } from './hooks'
 
 const App = () => {
-    const emptyBlog = {
-        title: '',
-        author: '',
-        url: ''
-    }
-
     const [blogs, setBlogs] = useState([])
-    const [newBlog, setNewBlog] = useState(emptyBlog)
     const [notification, setNotification] = useState({})
     const [user, setUser] = useState(null)
 
     const username = useField('text')
     const password = useField('password')
+
+    const newBlogFields = {
+        title: useField('text'),
+        author: useField('text'),
+        url: useField('text'),
+    }
+
+    const resetNewBlogFields = () => {
+        newBlogFields.title.reset()
+        newBlogFields.author.reset()
+        newBlogFields.url.reset()
+    }
+
+    const newBlog = {
+        title: newBlogFields.title.value,
+        author: newBlogFields.author.value,
+        url: newBlogFields.url.value,
+    }
 
     const blogFormRef = React.createRef()
 
@@ -63,6 +74,9 @@ const App = () => {
 
             setUser(user)
 
+            username.reset()
+            password.reset()
+
             newNotification({
                 message: `Welcome, ${user.name}!`,
                 type: 'success'
@@ -96,7 +110,8 @@ const App = () => {
             .create(newBlog)
             .then(returnedBlog => {
                 setBlogs(blogs.concat(returnedBlog))
-                setNewBlog(emptyBlog)
+                resetNewBlogFields()
+
                 newNotification({
                     message: `A new blog ${returnedBlog.title} by ${returnedBlog.author} created`,
                     type: 'success'
@@ -170,30 +185,15 @@ const App = () => {
         <form onSubmit={addBlog}>
             title
             <br />
-            <input
-                type="text"
-                value={newBlog.title}
-                name="title"
-                onChange={({ target }) => setNewBlog({ ...newBlog, title: target.value })}
-            />
+            <input {...newBlogFields.title.toForm()} />
             <br />
             author
             <br />
-            <input
-                type="text"
-                value={newBlog.author}
-                name="author"
-                onChange={({ target }) => setNewBlog({ ...newBlog, author: target.value })}
-            />
+            <input {...newBlogFields.author.toForm()} />
             <br />
             url
             <br />
-            <input
-                type="text"
-                value={newBlog.url}
-                name="url"
-                onChange={({ target }) => setNewBlog({ ...newBlog, url: target.value })}
-            />
+            <input {...newBlogFields.url.toForm()} />
             <br />
             <button type="submit">tallenna</button>
         </form>
