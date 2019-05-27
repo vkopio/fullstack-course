@@ -37,6 +37,12 @@ export const voteAction = (anecdote) => {
       type: 'VOTE',
       data: updatedAnecdote
     })
+
+    setTimeout(() => {
+      dispatch({
+        type: 'CLEAR'
+      })
+    }, 5000)
   }
 }
 
@@ -48,6 +54,12 @@ export const createAction = (anecdote) => {
       type: 'CREATE',
       data: newAnecdote
     })
+
+    setTimeout(() => {
+      dispatch({
+        type: 'CLEAR'
+      })
+    }, 5000)
   }
 }
 

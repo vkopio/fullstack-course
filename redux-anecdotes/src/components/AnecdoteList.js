@@ -9,8 +9,6 @@ const AnecdoteList = (props) => {
     const vote = (anecdoteObject) => {
         console.log('vote', anecdoteObject)
         props.voteAction(anecdoteObject)
-
-        setTimeout(() => props.clearNotification(), 5000)
     }
 
     return (

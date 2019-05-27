@@ -11,8 +11,6 @@ const AnecdoteForm = (props) => {
 
         props.createAction(anecdote)
         event.target.anecdote.value = ''
-
-        setTimeout(() => props.clearNotification(), 5000)
     }
 
     return (
