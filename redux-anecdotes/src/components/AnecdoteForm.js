@@ -2,7 +2,6 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { createAction } from '../reducers/anecdoteReducer'
 import { clearNotification } from '../reducers/notificationReducer'
-import anecdoteService from '../services/anecdotes'
 
 const AnecdoteForm = (props) => {
     const createAnecdote = (event) => {
@@ -10,7 +9,6 @@ const AnecdoteForm = (props) => {
 
         const anecdote = event.target.anecdote.value
 
-        anecdoteService.create(anecdote)
         props.createAction(anecdote)
         event.target.anecdote.value = ''
 
