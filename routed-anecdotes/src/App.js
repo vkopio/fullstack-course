@@ -66,6 +66,9 @@ const CreateNew = (props) => {
       info,
       votes: 0
     })
+    props.setNotification(`New anecdote "${content}" created!"`)
+    setTimeout(() => props.setNotification(''), 10000)
+    props.history.push('/')
   }
 
   return (
@@ -90,6 +93,8 @@ const CreateNew = (props) => {
   )
 
 }
+
+const CreateAnecdote = withRouter(CreateNew)
 
 const Anecdote = ({ anecdote }) => (
   <div>
@@ -149,6 +154,8 @@ const App = () => {
           <h1>Software anecdotes</h1>
           <Menu />
 
+          {notification}
+
           <Route exact path="/" render={() =>
             <AnecdoteList anecdotes={anecdotes} />
           } />
@@ -162,7 +169,9 @@ const App = () => {
           } />
 
           <Route exact path="/create" render={() =>
-            <CreateNew addNew={addNew} />
+            <CreateAnecdote
+              addNew={addNew}
+              setNotification={setNotification} />
           } />
         </div>
       </Router>
