@@ -1,10 +1,12 @@
-import React from 'react';
+import React from 'react'
+import { voteAction } from './reducers/anecdoteReducer'
 
 const App = (props) => {
   const anecdotes = props.store.getState()
   
   const vote = (id) => {
     console.log('vote', id)
+    props.store.dispatch(voteAction(id))
   }
   
   return (
