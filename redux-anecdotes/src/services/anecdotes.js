@@ -14,8 +14,14 @@ const create = async (anecdote) => {
     }
 
     const response = await axios.post(baseUrl, anecdoteObject)
-    
+
     return response.data
 }
 
-export default { getAll, create }
+const patch = async (anecdote) => {
+    const response = await axios.patch(`${baseUrl}/${anecdote.id}`, anecdote)
+
+    return response.data
+}
+
+export default { getAll, create, patch }
