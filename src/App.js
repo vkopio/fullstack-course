@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
 import Blogs from './components/Blogs'
 import Login from './components/Login'
 import Notification from './components/Notification'
 import Togglable from './components/Toglable'
 import BlogFrom from './components/BlogForm'
+import Users from './components/Users'
 import { initializeBlogs } from './reducers/blogsReducer'
 import { initializeUser } from './reducers/userReducer'
 
@@ -37,7 +39,13 @@ const App = (props) => {
 
             <h1>Blogs</h1>
             <Login />
-            <Home user={props.user} />
+
+            <Router>
+                <div>
+                    <Route exact path="/" render={() => <Home user={props.user} />} />
+                    <Route path="/users" render={() => <Users />} />
+                </div>
+            </Router>
         </div>
     )
 }
