@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { connect } from 'react-redux'
 import Blogs from './components/Blogs'
 import Login from './components/Login'
 import Notification from './components/Notification'
@@ -6,10 +7,10 @@ import Togglable from './components/Toglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import { useField } from './hooks'
+import { successNotification, errorNotification } from './reducers/notificationReducer'
 
-const App = () => {
+const App = (props) => {
     const [blogs, setBlogs] = useState([])
-    const [notification, setNotification] = useState({})
     const [user, setUser] = useState(null)
 
     const username = useField('text')
@@ -53,14 +54,6 @@ const App = () => {
         }
     }, [])
 
-    const newNotification = (notification) => {
-        setNotification(notification)
-
-        setTimeout(() => {
-            setNotification({})
-        }, 5000)
-    }
-
     const handleLogin = async (event) => {
         event.preventDefault()
         try {
@@ -77,15 +70,9 @@ const App = () => {
             username.reset()
             password.reset()
 
-            newNotification({
-                message: `Welcome, ${user.name}!`,
-                type: 'success'
-            })
+            props.successNotification(`Welcome, ${user.name}!`)
         } catch (exception) {
-            newNotification({
-                message: 'Wrong username or password',
-                type: 'error'
-            })
+            props.errorNotification('Wrong username or password')
         }
     }
 
@@ -93,12 +80,8 @@ const App = () => {
         event.preventDefault()
         window.localStorage.removeItem('user')
 
-        newNotification({
-            message: `Goodbye, ${user.name}!`,
-            type: 'success'
-        })
-
         setUser(null)
+        props.successNotification(`Goodbye, ${user.name}!`)
     }
 
     const addBlog = (event) => {
@@ -112,16 +95,10 @@ const App = () => {
                 setBlogs(blogs.concat(returnedBlog))
                 resetNewBlogFields()
 
-                newNotification({
-                    message: `A new blog ${returnedBlog.title} by ${returnedBlog.author} created`,
-                    type: 'success'
-                })
+                props.successNotification(`A new blog ${returnedBlog.title} by ${returnedBlog.author} created`)
             })
             .catch(error => {
-                newNotification({
-                    message: `${error.response.data.error}`,
-                    type: 'error'
-                })
+                props.errorNotification(error.response.data.error)
             })
     }
 
@@ -135,16 +112,10 @@ const App = () => {
                         blog)
                 ))
 
-                newNotification({
-                    message: `Blog ${returnedBlog.title} was liked`,
-                    type: 'success'
-                })
+                props.successNotification(`Blog ${returnedBlog.title} was liked`)
             })
             .catch(error => {
-                newNotification({
-                    message: `${error.response.data.error}`,
-                    type: 'error'
-                })
+                props.errorNotification(error.response.data.error)
             })
     }
 
@@ -156,16 +127,10 @@ const App = () => {
                     blog.id !== blogToRemove.id)
                 )
 
-                newNotification({
-                    message: `Blog ${blogToRemove.title} was deleted`,
-                    type: 'success'
-                })
+                props.successNotification(`Blog ${blogToRemove.title} was deleted`)
             })
             .catch(error => {
-                newNotification({
-                    message: `${error.response.data.error}`,
-                    type: 'error'
-                })
+                props.errorNotification(error.response.data.error)
             })
     }
 
@@ -201,7 +166,7 @@ const App = () => {
 
     return (
         <div>
-            <Notification notification={notification} />
+            <Notification notification={props.notification} />
 
             <h1>Blogs</h1>
 
@@ -231,4 +196,20 @@ const App = () => {
     )
 }
 
-export default App
+const mapStateToProps = (state) => {
+    return {
+        notification: state.notification,
+    }
+}
+
+const mapDispatchToProps = {
+    successNotification,
+    errorNotification,
+}
+
+const ConnectedApp = connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(App)
+
+export default ConnectedApp
