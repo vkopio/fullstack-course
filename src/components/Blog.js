@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
+import { connect } from 'react-redux'
+import { likeBlog, removeBlog } from '../reducers/blogsReducer'
 
-const Blog = ({ blog, user, handleBlogLike, handleBlogRemoval }) => {
+const Blog = (props) => {
+    const blog = props.blog
     const [details, setDetails] = useState(false)
 
     const showDetails = { display: details ? '' : 'none' }
@@ -18,9 +21,21 @@ const Blog = ({ blog, user, handleBlogLike, handleBlogRemoval }) => {
     }
 
     const removeButton = () => {
-        return user.username === blog.user.username ?
+        return props.user.username === blog.user.username ?
             (<p><button onClick={handleBlogRemoval(blog)}>Remove</button></p>) :
             null
+    }
+
+    const handleBlogLike = (blog) => {
+        return () => props.likeBlog(blog)
+    }
+
+    const handleBlogRemoval = (blog) => {
+        return () => {
+            if (window.confirm(`Do you want to remove blog: ${blog.title} by ${blog.author}?`)) {
+                props.removeBlog(blog)
+            }
+        }
     }
 
     return (
@@ -40,4 +55,20 @@ const Blog = ({ blog, user, handleBlogLike, handleBlogRemoval }) => {
     )
 }
 
-export default Blog
+const mapStateToProps = (state) => {
+    return {
+        user: state.user,
+    }
+}
+
+const mapDispatchToProps = {
+    likeBlog,
+    removeBlog
+}
+
+const ConnectedBlog = connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Blog)
+
+export default ConnectedBlog

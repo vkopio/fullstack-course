@@ -5,8 +5,7 @@ import Login from './components/Login'
 import Notification from './components/Notification'
 import Togglable from './components/Toglable'
 import BlogFrom from './components/BlogForm'
-import { successNotification, errorNotification } from './reducers/notificationReducer'
-import { initializeBlogs, likeBlog, removeBlog } from './reducers/blogsReducer'
+import { initializeBlogs } from './reducers/blogsReducer'
 import { initializeUser } from './reducers/userReducer'
 
 const App = (props) => {
@@ -16,18 +15,6 @@ const App = (props) => {
     }, [])
 
     const blogFormRef = React.createRef()
-
-    const handleBlogLike = (blog) => {
-        return () => props.likeBlog(blog)
-    }
-
-    const handleBlogRemoval = (blog) => {
-        return () => {
-            if (window.confirm(`Do you want to remove blog: ${blog.title} by ${blog.author}?`)) {
-                props.removeBlog(blog)
-            }
-        }
-    }
 
     return (
         <div>
@@ -44,11 +31,7 @@ const App = (props) => {
                         <BlogFrom formToggler={blogFormRef} />
                     </Togglable>
 
-                    <Blogs
-                        blogs={props.blogs}
-                        user={props.user}
-                        handleBlogLike={handleBlogLike}
-                        handleBlogRemoval={handleBlogRemoval} />
+                    <Blogs />
                 </>}
 
         </div>
@@ -64,11 +47,7 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = {
-    successNotification,
-    errorNotification,
     initializeBlogs,
-    likeBlog,
-    removeBlog,
     initializeUser,
 }
 
