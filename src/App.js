@@ -8,9 +8,21 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import { useField } from './hooks'
 import { successNotification, errorNotification } from './reducers/notificationReducer'
+import { initializeBlogs, createBlog, likeBlog, removeBlog } from './reducers/blogsReducer'
 
 const App = (props) => {
-    const [blogs, setBlogs] = useState([])
+    useEffect(() => {
+        props.initializeBlogs()
+
+        const existingUser = window.localStorage.getItem('user')
+
+        if (existingUser) {
+            const user = JSON.parse(existingUser)
+            blogService.setToken(user.token)
+            setUser(user)
+        }
+    }, [])
+
     const [user, setUser] = useState(null)
 
     const username = useField('text')
@@ -35,24 +47,6 @@ const App = (props) => {
     }
 
     const blogFormRef = React.createRef()
-
-    const sortBlogs = (blogs) => blogs.sort((a, b) => (a.likes > b.likes) ? -1 : 1)
-
-    useEffect(() => {
-        blogService.getAll().then(blogs =>
-            setBlogs(sortBlogs(blogs))
-        )
-    }, [])
-
-    useEffect(() => {
-        const existingUser = window.localStorage.getItem('user')
-
-        if (existingUser) {
-            const user = JSON.parse(existingUser)
-            blogService.setToken(user.token)
-            setUser(user)
-        }
-    }, [])
 
     const handleLogin = async (event) => {
         event.preventDefault()
@@ -84,64 +78,25 @@ const App = (props) => {
         props.successNotification(`Goodbye, ${user.name}!`)
     }
 
-    const addBlog = (event) => {
+    const hideBlogForm = () => blogFormRef.current.toggleVisibility()
+
+    const addBlog = async (event) => {
         event.preventDefault()
 
-        blogFormRef.current.toggleVisibility()
+        hideBlogForm()
+        resetNewBlogFields()
 
-        blogService
-            .create(newBlog)
-            .then(returnedBlog => {
-                setBlogs(blogs.concat(returnedBlog))
-                resetNewBlogFields()
-
-                props.successNotification(`A new blog ${returnedBlog.title} by ${returnedBlog.author} created`)
-            })
-            .catch(error => {
-                props.errorNotification(error.response.data.error)
-            })
-    }
-
-    const likeBlog = (blog) => {
-        blogService
-            .like(blog)
-            .then(returnedBlog => {
-                setBlogs(sortBlogs(blogs.map(blog =>
-                    blog.id === returnedBlog.id ?
-                        returnedBlog :
-                        blog)
-                ))
-
-                props.successNotification(`Blog ${returnedBlog.title} was liked`)
-            })
-            .catch(error => {
-                props.errorNotification(error.response.data.error)
-            })
-    }
-
-    const removeBlog = (blogToRemove) => {
-        blogService
-            .remove(blogToRemove)
-            .then(() => {
-                setBlogs(blogs.filter(blog =>
-                    blog.id !== blogToRemove.id)
-                )
-
-                props.successNotification(`Blog ${blogToRemove.title} was deleted`)
-            })
-            .catch(error => {
-                props.errorNotification(error.response.data.error)
-            })
+        props.createBlog(newBlog)
     }
 
     const handleBlogLike = (blog) => {
-        return () => likeBlog(blog)
+        return () => props.likeBlog(blog)
     }
 
     const handleBlogRemoval = (blog) => {
         return () => {
             if (window.confirm(`Do you want to remove blog: ${blog.title} by ${blog.author}?`)) {
-                removeBlog(blog)
+                props.removeBlog(blog)
             }
         }
     }
@@ -186,7 +141,7 @@ const App = (props) => {
                     </Togglable>
 
                     <Blogs
-                        blogs={blogs}
+                        blogs={props.blogs}
                         user={user}
                         handleBlogLike={handleBlogLike}
                         handleBlogRemoval={handleBlogRemoval} />
@@ -199,12 +154,17 @@ const App = (props) => {
 const mapStateToProps = (state) => {
     return {
         notification: state.notification,
+        blogs: state.blogs,
     }
 }
 
 const mapDispatchToProps = {
     successNotification,
     errorNotification,
+    initializeBlogs,
+    createBlog,
+    likeBlog,
+    removeBlog,
 }
 
 const ConnectedApp = connect(
