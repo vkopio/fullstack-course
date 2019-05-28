@@ -8,13 +8,28 @@ import BlogFrom from './components/BlogForm'
 import { initializeBlogs } from './reducers/blogsReducer'
 import { initializeUser } from './reducers/userReducer'
 
+const Home = (props) => {
+    const blogFormRef = React.createRef()
+
+    if (props.user !== null) {
+        return <>
+            <h2>New blog</h2>
+            <Togglable buttonLabel="New blog" ref={blogFormRef}>
+                <BlogFrom formToggler={blogFormRef} />
+            </Togglable>
+
+            <Blogs />
+        </>
+    }
+
+    return null
+}
+
 const App = (props) => {
     useEffect(() => {
         props.initializeBlogs()
         props.initializeUser()
     }, [])
-
-    const blogFormRef = React.createRef()
 
     return (
         <div>
@@ -22,18 +37,7 @@ const App = (props) => {
 
             <h1>Blogs</h1>
             <Login />
-
-            {(props.user === null) ?
-                null :
-                <>
-                    <h2>New blog</h2>
-                    <Togglable buttonLabel="New blog" ref={blogFormRef}>
-                        <BlogFrom formToggler={blogFormRef} />
-                    </Togglable>
-
-                    <Blogs />
-                </>}
-
+            <Home user={props.user} />
         </div>
     )
 }
