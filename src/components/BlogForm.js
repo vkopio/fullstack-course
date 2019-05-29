@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { useField } from '../hooks'
-import { login, logout } from '../reducers/userReducer'
+import { createBlog } from '../reducers/blogsReducer'
 import { Form, Button } from 'semantic-ui-react'
 
 const BlogForm = (props) => {
@@ -28,7 +28,7 @@ const BlogForm = (props) => {
     const addBlog = async (event) => {
         event.preventDefault()
 
-        hideBlogForm()
+        //hideBlogForm()
         resetNewBlogFields()
 
         props.createBlog(newBlog)
@@ -42,21 +42,21 @@ const BlogForm = (props) => {
 
             <Form.Field>
                 <label>title</label>
-                <input {...newBlogFields.title.toForm()} />
+                <input id="new-blog-title" {...newBlogFields.title.toForm()} />
             </Form.Field>
 
             <Form.Field>
                 <label>author</label>
-                <input {...newBlogFields.author.toForm()} />
+                <input id="new-blog-author" {...newBlogFields.author.toForm()} />
             </Form.Field>
 
             <Form.Field>
                 <label>url</label>
-                <input {...newBlogFields.url.toForm()} />
+                <input id="new-blog-url" {...newBlogFields.url.toForm()} />
             </Form.Field>
 
             <Form.Field>
-                <Button primary type="submit">Tallenna</Button>
+                <Button primary id="new-blog-save" type="submit">Save</Button>
             </Form.Field>
         </Form>
     )
@@ -69,8 +69,7 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = {
-    login,
-    logout,
+    createBlog
 }
 
 const ConnectedBlogForm = connect(

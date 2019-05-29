@@ -27,12 +27,12 @@ const Login = (props) => {
 
             <Form.Field>
                 <label>käyttäjätunnus</label>
-                <input {...username.toForm()} />
+                <input id='username' {...username.toForm()} />
             </Form.Field>
 
             <Form.Field>
                 <label>salasana</label>
-                <input {...password.toForm()} />
+                <input id='password' {...password.toForm()} />
             </Form.Field>
 
             <Form.Field>
