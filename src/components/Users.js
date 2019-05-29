@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Table } from 'semantic-ui-react'
 import usersService from '../services/usersService'
 
 const Users = () => {
@@ -12,22 +13,22 @@ const Users = () => {
 
     const userTable = () => {
         return (
-            <table>
-                <thead>
-                    <tr>
-                        <th>User</th>
-                        <th>Blogs created</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <Table>
+                <Table.Header>
+                    <Table.Row>
+                        <Table.HeaderCell>User</Table.HeaderCell>
+                        <Table.HeaderCell>Blogs created</Table.HeaderCell>
+                    </Table.Row>
+                </Table.Header>
+                <Table.Body>
                     {users.map(user => (
-                        <tr key={user.id}>
-                            <td>{user.name}</td>
-                            <td>{user.blogs.length}</td>
-                        </tr>
+                        <Table.Row key={user.id}>
+                            <Table.Cell>{user.name}</Table.Cell>
+                            <Table.Cell>{user.blogs.length}</Table.Cell>
+                        </Table.Row>
                     ))}
-                </tbody>
-            </table>
+                </Table.Body>
+            </Table>
         )
     }
 

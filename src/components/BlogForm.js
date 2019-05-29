@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { useField } from '../hooks'
 import { login, logout } from '../reducers/userReducer'
+import { Form, Button } from 'semantic-ui-react'
 
 const BlogForm = (props) => {
     const newBlogFields = {
@@ -34,21 +35,30 @@ const BlogForm = (props) => {
     }
 
     return (
-        <form onSubmit={addBlog}>
-            title
-            <br />
-            <input {...newBlogFields.title.toForm()} />
-            <br />
-            author
-            <br />
-            <input {...newBlogFields.author.toForm()} />
-            <br />
-            url
-            <br />
-            <input {...newBlogFields.url.toForm()} />
-            <br />
-            <button type="submit">tallenna</button>
-        </form>
+        <Form onSubmit={addBlog}>
+            <Form.Field>
+                <h2>New blog</h2>
+            </Form.Field>
+
+            <Form.Field>
+                <label>title</label>
+                <input {...newBlogFields.title.toForm()} />
+            </Form.Field>
+
+            <Form.Field>
+                <label>author</label>
+                <input {...newBlogFields.author.toForm()} />
+            </Form.Field>
+
+            <Form.Field>
+                <label>url</label>
+                <input {...newBlogFields.url.toForm()} />
+            </Form.Field>
+
+            <Form.Field>
+                <Button primary type="submit">Tallenna</Button>
+            </Form.Field>
+        </Form>
     )
 }
 

@@ -1,7 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { useField } from '../hooks'
-import { login, logout } from '../reducers/userReducer'
+import { login } from '../reducers/userReducer'
+import { Form, Button } from 'semantic-ui-react'
 
 const Login = (props) => {
     const username = useField('text')
@@ -20,33 +21,27 @@ const Login = (props) => {
         password.reset()
     }
 
-    const handleLogout = () => {
-        props.logout(props.user)
-    }
-
     const loginForm = () => (
-        <form onSubmit={handleLogin}>
+        <Form onSubmit={handleLogin}>
             <h2>Log in to application</h2>
-            <div>
-                käyttäjätunnus
+
+            <Form.Field>
+                <label>käyttäjätunnus</label>
                 <input {...username.toForm()} />
-            </div>
-            <div>
-                salasana
+            </Form.Field>
+
+            <Form.Field>
+                <label>salasana</label>
                 <input {...password.toForm()} />
-            </div>
-            <button type="submit">kirjaudu</button>
-        </form>
+            </Form.Field>
+
+            <Form.Field>
+                <Button primary type="submit">kirjaudu</Button>
+            </Form.Field>
+        </Form>
     )
 
-    const userInfo = () => (
-        <div>
-            <p>{props.user.name} logged in</p>
-            <button onClick={handleLogout}>Logout</button>
-        </div>
-    )
-
-    return (props.user === null) ? loginForm() : userInfo()
+    return (props.user === null) ? loginForm() : null
 }
 
 const mapStateToProps = (state) => {
@@ -57,7 +52,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {
     login,
-    logout,
 }
 
 const ConnectedLogin = connect(
