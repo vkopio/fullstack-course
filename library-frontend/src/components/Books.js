@@ -1,11 +1,28 @@
 import React from 'react'
+import { gql } from 'apollo-boost'
+import { useQuery } from 'react-apollo-hooks'
+
+const ALL_BOOKS = gql`
+{
+  allBooks {
+    title
+    author
+    published
+    id
+  }
+}
+`
 
 const Books = (props) => {
     if (!props.show) {
         return null
     }
 
-    const books = []
+    const result = useQuery(ALL_BOOKS)
+
+    if (result.loading) {
+        return <div>loading...</div>
+    }
 
     return (
         <div>
@@ -14,19 +31,15 @@ const Books = (props) => {
             <table>
                 <tbody>
                     <tr>
-                        <th></th>
-                        <th>
-                            author
-                        </th>
-                        <th>
-                            published
-                        </th>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Published</th>
                     </tr>
-                    {books.map(a =>
-                        <tr key={a.title}>
-                            <td>{a.title}</td>
-                            <td>{a.author}</td>
-                            <td>{a.published}</td>
+                    {result.data.allBooks.map(book =>
+                        <tr key={book.id}>
+                            <td>{book.title}</td>
+                            <td>{book.author}</td>
+                            <td>{book.published}</td>
                         </tr>
                     )}
                 </tbody>
