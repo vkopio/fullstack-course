@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useQuery, useMutation } from 'react-apollo-hooks'
 import { ALL_AUTHORS, ALL_BOOKS } from './graphql/queries'
-import { CREATE_BOOK } from './graphql/mutations'
+import { CREATE_BOOK, EDIT_AUTHOR } from './graphql/mutations'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
@@ -27,6 +27,8 @@ const App = () => {
         refetchQueries: [{ query: allAuthors }, { query: allBooks }]
     })
 
+    const editAuthor = useMutation(EDIT_AUTHOR)
+
     return (
         <div>
             {errorMessage &&
@@ -44,6 +46,7 @@ const App = () => {
             <Authors
                 show={page === 'authors'}
                 result={allAuthors}
+                editAuthor={editAuthor}
             />
 
             <Books
