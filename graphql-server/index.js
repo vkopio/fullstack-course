@@ -1,5 +1,8 @@
 const { ApolloServer, UserInputError, gql } = require('apollo-server')
 const uuid = require('uuid/v1')
+const mongodb = require('./src/mongodb')
+const Book = require('./src/models/book')
+const Author = require('./src/models/author')
 
 let authors = [
     {
@@ -88,7 +91,7 @@ const typeDefs = gql`
     type Book {
         title: String!
         published: Int!
-        author: String!
+        author: Author!
         id: ID!
         genres: [String]!
     }
@@ -129,17 +132,17 @@ const resolvers = {
         allBooks: (root, args) => {
             const booksByAuthor = args.author
                 ? books.filter(book => book.author === args.author)
-                : books
+                : Book.find({}).populate('author')
 
             const booksByGenre = args.genre
                 ? booksByAuthor.filter(book =>
-                      book.genres.some(genre => genre === args.genre)
-                  )
+                    book.genres.some(genre => genre === args.genre)
+                )
                 : booksByAuthor
 
             return booksByGenre
         },
-        allAuthors: () => authors,
+        allAuthors: () => Author.find(),
     },
 
     Author: {
@@ -149,38 +152,40 @@ const resolvers = {
     },
 
     Mutation: {
-        addBook: (root, args) => {
+        addBook: async (root, args) => {
             if (books.find(book => book.title === args.title)) {
                 throw new UserInputError('The book already exists', {
                     invalidArgs: args.title,
                 })
             }
 
-            const book = { ...args, id: uuid() }
-            books = books.concat(book)
+            const newAuthor = new Author({ name: args.author })
+            const existingAuthor = await Author.findOne({ name: args.author })
 
-            if (!authors.some(author => author.name === args.author)) {
-                const author = { name: args.author, id: uuid() }
-                authors = authors.concat(author)
-            }
+            const author = existingAuthor
+                ? existingAuthor
+                : await newAuthor.save()
 
-            return book
+            const book = new Book({ ...args, author })
+
+            return book.save()
         },
 
-        editAuthor: (root, args) => {
-            const author = authors.find(author => author.name === args.name)
+        editAuthor: async (root, args) => {
+            const author = await Author.findOne({ name: args.name })
+
+            console.log(args.name)
+            console.log(author)
 
             if (!author) {
                 return null
             }
 
-            const updatedAuthor = { ...author, born: args.setBornTo }
+            author.born = args.setBornTo
 
-            authors = authors.map(author =>
-                author.name === args.name ? updatedAuthor : author
-            )
+            console.log(author.born)
 
-            return updatedAuthor
+            return author.save()
         },
     },
 }
@@ -189,6 +194,8 @@ const server = new ApolloServer({
     typeDefs,
     resolvers,
 })
+
+mongodb.connect()
 
 server.listen().then(({ url }) => {
     console.log(`Server ready at ${url}`)

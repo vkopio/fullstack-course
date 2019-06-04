@@ -18,6 +18,16 @@ const Authors = ({ show, result, editAuthor }) => {
         setBorn('')
     }
 
+    const renderAuthorOptions = () => {
+        if (name === '') {
+            setName(result.data.allAuthors[0].name)
+        }
+
+        return result.data.allAuthors.map(a =>
+            <option key={a.id} value={a.name}>{a.name}</option>
+        )
+    }
+
     if (!show) {
         return null
     }
@@ -51,10 +61,8 @@ const Authors = ({ show, result, editAuthor }) => {
 
             <form onSubmit={submit}>
                 <div>
-                    <select onChange={({ target }) => setName(target.value)}>
-                        {result.data.allAuthors.map(a =>
-                            <option key={a.id} value={a.name}>{a.name}</option>
-                        )}
+                    <select onChange={({ target }) => {setName(target.value)}}>
+                        {renderAuthorOptions()}
                     </select>
                 </div>
 
