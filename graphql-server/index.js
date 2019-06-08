@@ -72,22 +72,34 @@ const resolvers = {
 
     Mutation: {
         addBook: async (root, args) => {
-            if (books.find(book => book.title === args.title)) {
+            const existingBook = await Book.findOne({ title: args.title })
+            
+            if (existingBook) {
                 throw new UserInputError('The book already exists', {
                     invalidArgs: args.title,
                 })
             }
 
-            const newAuthor = new Author({ name: args.author })
-            const existingAuthor = await Author.findOne({ name: args.author })
+            try {
+                const newAuthor = new Author({ name: args.author })
+                const existingAuthor = await Author.findOne({ name: args.author })
 
-            const author = existingAuthor
-                ? existingAuthor
-                : await newAuthor.save()
+                const author = existingAuthor
+                    ? existingAuthor
+                    : await newAuthor.save()
 
-            const book = new Book({ ...args, author })
+                const book = new Book({ ...args, author })
 
-            return book.save()
+                book.save()
+            } catch (error) {
+
+                console.log(error)
+                throw new UserInputError(error.message, {
+                    invalidArgs: args,
+                })
+            }
+
+            return book
         },
 
         editAuthor: async (root, args) => {
@@ -99,7 +111,16 @@ const resolvers = {
 
             author.born = args.setBornTo
 
-            return author.save()
+            try {
+                await author.save()
+            } catch (error) {
+                console.log(error)
+                throw new UserInputError(error.message, {
+                    invalidArgs: args,
+                })
+            }
+
+            return author
         },
     },
 }

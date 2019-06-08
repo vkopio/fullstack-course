@@ -7,12 +7,16 @@ const Authors = ({ show, result, editAuthor }) => {
     const submit = async (e) => {
         e.preventDefault()
 
-        await editAuthor({
-            variables: {
-                name,
-                born: parseInt(born)
-            }
-        })
+        try {
+            await editAuthor({
+                variables: {
+                    name,
+                    born: parseInt(born)
+                }
+            })
+        } catch (error) {
+            console.log(error.message)
+        }
 
         setName('')
         setBorn('')

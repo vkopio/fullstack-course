@@ -46,6 +46,7 @@ const App = () => {
                 show={page === 'authors'}
                 result={allAuthors}
                 editAuthor={editAuthor}
+                handleError={handleError}
             />
 
             <Books
@@ -56,6 +57,7 @@ const App = () => {
             <NewBook
                 show={page === 'add'}
                 addBook={addBook}
+                handleError={handleError}
             />
 
         </div>
