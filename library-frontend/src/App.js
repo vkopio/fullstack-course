@@ -12,7 +12,8 @@ const App = () => {
 
     const handleError = (error) => {
         console.log(error)
-        setErrorMessage(error.graphQLErrors[0].message)
+        console.log(error.graphQLErrors)
+        setErrorMessage(error.message)
 
         setTimeout(() => {
             setErrorMessage(null)

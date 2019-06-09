@@ -25,7 +25,7 @@ const NewBook = ({ show, addBook, handleError }) => {
             })
         } catch (error) {
             console.log(error.name)
-            //handleError(error)
+            handleError(error)
         }
 
         setTitle('')
