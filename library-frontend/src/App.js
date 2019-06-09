@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { useApolloClient } from 'react-apollo-hooks'
 import { useQuery, useMutation } from 'react-apollo-hooks'
-import { ALL_AUTHORS, ALL_BOOKS } from './graphql/queries'
+import { ALL_AUTHORS, ALL_BOOKS, ME } from './graphql/queries'
 import { CREATE_BOOK, EDIT_AUTHOR, LOGIN } from './graphql/mutations'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import Login from './components/Login'
+import Recommendations from './components/Recommendations'
 
 const App = () => {
     const client = useApolloClient()
@@ -35,6 +36,7 @@ const App = () => {
 
     const allAuthors = useQuery(ALL_AUTHORS)
     const allBooks = useQuery(ALL_BOOKS)
+    const me = useQuery(ME)
 
     const addBook = useMutation(CREATE_BOOK, {
         refetchQueries: [{ query: ALL_AUTHORS }, { query: ALL_BOOKS }]
@@ -58,6 +60,7 @@ const App = () => {
         if (token) {
             return (<>
                 <button onClick={() => setPage('add')}>add book</button>
+                <button onClick={() => setPage('recommendations')}>recommendations</button>
                 <button onClick={() => logout()}>logout</button>
             </>)
         }
@@ -102,6 +105,12 @@ const App = () => {
                 show={page === 'add'}
                 addBook={addBook}
                 handleError={handleError}
+            />
+
+            <Recommendations
+                show={page === 'recommendations'}
+                result={allBooks}
+                me={me}
             />
 
         </div>
