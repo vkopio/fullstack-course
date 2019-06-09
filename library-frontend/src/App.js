@@ -1,14 +1,27 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useApolloClient } from 'react-apollo-hooks'
 import { useQuery, useMutation } from 'react-apollo-hooks'
 import { ALL_AUTHORS, ALL_BOOKS } from './graphql/queries'
-import { CREATE_BOOK, EDIT_AUTHOR } from './graphql/mutations'
+import { CREATE_BOOK, EDIT_AUTHOR, LOGIN } from './graphql/mutations'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
+import Login from './components/Login'
 
 const App = () => {
+    const client = useApolloClient()
+
     const [page, setPage] = useState('authors')
     const [errorMessage, setErrorMessage] = useState(null)
+    const [token, setToken] = useState(null)
+
+    useEffect(() => {
+        const storedToken = localStorage.getItem('user-token')
+
+        if (storedToken) {
+            setToken(storedToken)
+        }
+    }, [])
 
     const handleError = (error) => {
         console.log(error)
@@ -28,6 +41,29 @@ const App = () => {
     })
 
     const editAuthor = useMutation(EDIT_AUTHOR)
+    const login = useMutation(LOGIN)
+
+    const goToFrontPage = () => {
+        setPage('authors')
+    }
+
+    const logout = () => {
+        setToken(null)
+        localStorage.clear()
+        client.resetStore()
+        goToFrontPage()
+    }
+
+    const loggedInMenu = () => {
+        if (token) {
+            return (<>
+                <button onClick={() => setPage('add')}>add book</button>
+                <button onClick={() => logout()}>logout</button>
+            </>)
+        }
+
+        return <button onClick={() => setPage('login')}>login</button>
+    }
 
     return (
         <div>
@@ -40,8 +76,15 @@ const App = () => {
             <div>
                 <button onClick={() => setPage('authors')}>authors</button>
                 <button onClick={() => setPage('books')}>books</button>
-                <button onClick={() => setPage('add')}>add book</button>
+                {loggedInMenu()}
             </div>
+
+            <Login
+                show={page === 'login'}
+                login={login}
+                setToken={setToken}
+                goToFrontPage={goToFrontPage}
+            />
 
             <Authors
                 show={page === 'authors'}
