@@ -4,6 +4,8 @@ const mongodb = require('./src/mongodb')
 const Book = require('./src/models/book')
 const Author = require('./src/models/author')
 const User = require('./src/models/user')
+const { PubSub } = require('apollo-server')
+const pubsub = new PubSub()
 
 const JWT_SECRET = 'NEED_HERE_A_SECRET_KEY'
 
@@ -64,6 +66,10 @@ const typeDefs = gql`
             password: String!
         ): Token
     }
+
+    type Subscription {
+        bookAdded: Book!
+    } 
 `
 
 const resolvers = {
@@ -111,24 +117,38 @@ const resolvers = {
                 })
             }
 
+            const existingAuthor = await Author.findOne({ name: args.author })
+            const newAuthor = new Author({ name: args.author })
+
+            if (!existingAuthor) {
+                try {
+                    await newAuthor.save()
+                } catch (error) {
+                    console.log(error)
+                    throw new UserInputError(error.message, {
+                        invalidArgs: args,
+                    })
+                }
+            }
+
+            const author = existingAuthor
+                ? existingAuthor
+                : newAuthor
+
+            const book = new Book({ ...args, author })
+
             try {
-                const newAuthor = new Author({ name: args.author })
-                const existingAuthor = await Author.findOne({ name: args.author })
-
-                const author = existingAuthor
-                    ? existingAuthor
-                    : await newAuthor.save()
-
-                const book = new Book({ ...args, author })
-
-                return book.save()
+                await book.save()
             } catch (error) {
-
                 console.log(error)
                 throw new UserInputError(error.message, {
                     invalidArgs: args,
                 })
             }
+
+            pubsub.publish('BOOK_ADDED', { bookAdded: book })
+
+            return book
         },
 
         editAuthor: async (root, args, context) => {
@@ -157,7 +177,7 @@ const resolvers = {
         },
 
         createUser: (root, args) => {
-            const user = new User({ 
+            const user = new User({
                 username: args.username,
                 favoriteGenre: args.favoriteGenre,
             })
@@ -185,6 +205,12 @@ const resolvers = {
             return { value: jwt.sign(userForToken, JWT_SECRET) }
         },
     },
+
+    Subscription: {
+        bookAdded: {
+            subscribe: () => pubsub.asyncIterator(['BOOK_ADDED'])
+        },
+    },
 }
 
 const server = new ApolloServer({
@@ -204,6 +230,7 @@ const server = new ApolloServer({
 
 mongodb.connect()
 
-server.listen().then(({ url }) => {
+server.listen().then(({ url, subscriptionsUrl }) => {
     console.log(`Server ready at ${url}`)
+    console.log(`Subscriptions ready at ${subscriptionsUrl}`)
 })
