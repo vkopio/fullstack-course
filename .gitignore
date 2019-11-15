@@ -1,4 +1,5 @@
 node_modules/
 osa1/esimerkki/
 /test/
+build/
 .env
